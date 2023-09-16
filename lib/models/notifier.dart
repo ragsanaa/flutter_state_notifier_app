@@ -4,7 +4,7 @@ import 'package:flutter_state_notifier/models/api_model.dart';
 import 'package:dio/dio.dart';
 
 class DataNotifier extends StateNotifier<List<Post>> {
-  DataNotifier(List<Post> state) : super(state);
+  DataNotifier() : super([]);
 
   void addPost() => state = [
         ...state,
