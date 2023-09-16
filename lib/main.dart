@@ -10,33 +10,38 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final posts = ref.watch(postProvider);
     return MaterialApp(
       title: 'Material App',
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Material App Bar'),
+          actions: [
+            IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  ref.read(postProvider.notifier).addPost();
+                }),
+            IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: () {
+                  ref.read(postProvider.notifier).getPosts();
+                }),
+          ],
         ),
-        body: FutureBuilder(
-            future: ref.read(postProvider.notifier).getPosts(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final posts = snapshot.data as List<Post>;
-              return ListView.builder(
-                  itemCount: posts.length,
-                  itemBuilder: (context, index) {
-                    final post = posts[index];
-                    return ListTile(
-                      title: Text(post.title),
-                      subtitle: Text(post.body),
-                      trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            ref.read(postProvider.notifier).addPost();
-                          }),
-                    );
-                  });
+        body: ListView.builder(
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              final post = posts[index];
+              return ListTile(
+                title: Text(post.title),
+                subtitle: Text(post.body),
+                trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      ref.read(postProvider.notifier).deletePost(post);
+                    }),
+              );
             }),
       ),
     );
